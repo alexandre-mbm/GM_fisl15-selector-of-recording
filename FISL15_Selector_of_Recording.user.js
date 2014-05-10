@@ -51,6 +51,11 @@ function contentForFile(filename) {
         case 'playlist.m3u':
             sum = sum + '#EXTM3U' + '\n\n';
             break;
+        case 'playlist.xspf':
+            sum = sum + '<?xml version="1.0" encoding="UTF-8"?>\n'
+            sum = sum + '<playlist version="1" xmlns="http://xspf.org/ns/0/">\n';
+            sum = sum + '  <trackList>\n';
+            break;
     }
     
     $(".recording").each( function() {
@@ -83,10 +88,28 @@ function contentForFile(filename) {
                 case 'links.txt':
                     sum = sum + link + '\n';
                     break;
+                case 'playlist.xspf':
+                    // http://stackoverflow.com/a/12945405/3391915
+                    // http://www.naveen.com.au/javascript/jquery/encode-or-decode-html-entities-with-jquery/289
+                    sum = sum + '    <track>\n';
+                    sum = sum + '      <location>' + link + '</location>\n';
+                    sum = sum + '      <title>' + title + '</title>\n';
+                    sum = sum + '      <creator>' + author + '</creator>\n';
+                    sum = sum + '      <info>http://softwarelivre.org/fisl15</info>\n';
+                    sum = sum + '      <album>FISL 15 - ' + area + '</album>\n';
+                    sum = sum + '    </track>\n';
+                    break;
             }
         }
     });
     
+    switch(filename) {
+        case 'playlist.xspf':
+            sum = sum + '  </tracklist>\n';
+            sum = sum + '</playlist>';
+            break;
+    }
+
     return sum.replace(/\n+$/g,''); 
 }
 
@@ -123,6 +146,8 @@ var bar = $("#topBar small");
 bar.text('');
 bar.append('download: ');
 createLink(bar, 'm3u', 'playlist.m3u');
+bar.append(' ');
+createLink(bar, 'xspf', 'playlist.xspf');
 bar.append(' ');
 createLink(bar, 'txt', 'talks.txt');
 bar.append(' ');
