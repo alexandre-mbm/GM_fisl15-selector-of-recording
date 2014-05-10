@@ -37,7 +37,8 @@ function createLink(element, content, filename) {
         .attr("download", filename)
         .click(function(){
             var text = contentForFile(filename);
-            value = (window.btoa?'base64,'+btoa(text):text);
+            var text_base64 = btoa(unescape(encodeURIComponent(text)));
+            value = (window.btoa?'base64,'+text_base64:text);
             $(this).attr("href", 'data:text/plain;' + value);
         })
     );
